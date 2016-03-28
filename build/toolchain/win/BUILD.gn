@@ -58,27 +58,31 @@ toolchain("clang") {
   }
 
   tool("solink") {
-    soname = "{{target_output_name}}{{output_extension}}"
-    sofile = "{{root_out_dir}}/$soname"
-    tocfile = sofile + ".TOC"
-    temporary_tocname = sofile + ".tmp"
-    link_command = "$ld -shared {{ldflags}} -o $sofile -Wl,-soname=$soname {{inputs}} {{solibs}} {{libs}}"
-    toc_command = "{ readelf -d $sofile | grep SONAME ; nm -gD -f p $soname | cut -f1-2 -d' '; } > $temporary_tocname"
-    replace_command = "if ! cmp -s $temporary_tocname $tocfile; then mv $temporary_tocname $tocfile; fi"
+    dllname = "{{root_out_dir}}/{{target_output_name}}{{output_extension}}"  # e.g. foo.dll
+    libname = "${dllname}.lib"  # e.g. foo.dll.lib
+    rspfile = "${dllname}.rsp"
 
-    command = "$link_command && $toc_command && $replace_command"
-    description = "SOLINK $sofile"
-    default_output_extension = ".so"
-    output_prefix = "lib"
+    link_command = "link.exe /nologo /IMPLIB:$libname /DLL /OUT:$dllname /PDB:${dllname}.pdb @$rspfile"
 
+    command = link_command
+
+    default_output_extension = ".dll"
+    description = "LINK(DLL) {{output}}"
+    outputs = [
+      dllname,
+      libname,
+    ]
+    link_output = libname
+    depend_output = libname
+
+    # Since the above commands only updates the .lib file when it changes, ask
+    # Ninja to check if the timestamp actually changed to know if downstream
+    # dependencies should be recompiled.
     restat = true
 
-    outputs = [
-      sofile,
-      tocfile,
-    ]
-    link_output = sofile
-    depend_output = tocfile
+    # The use of inputs_newline is to work around a fixed per-line buffer
+    # size in the linker.
+    rspfile_content = "{{libs}} {{solibs}} {{inputs_newline}} {{ldflags}}"
   }
 
   tool("link") {
