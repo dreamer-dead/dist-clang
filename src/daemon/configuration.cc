@@ -3,7 +3,12 @@
 #include <base/logging.h>
 #include <base/protobuf_utils.h>
 
+#if defined(OS_WIN)
+#include <third_party/gflags/win/gflags.h>
+#else
 #include <third_party/gflags/linux/gflags.h>
+#endif
+
 #include <third_party/protobuf/exported/src/google/protobuf/io/zero_copy_stream_impl.h>
 #include <third_party/protobuf/exported/src/google/protobuf/text_format.h>
 
