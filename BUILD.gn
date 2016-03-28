@@ -371,3 +371,9 @@ if (host_os == "mac") {
     deps = package_deps
   }
 }
+
+if (host_os == "win") {
+  group("Build") {
+    deps = package_deps
+  }
+}
