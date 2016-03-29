@@ -514,7 +514,7 @@ GTestLog::~GTestLog() {
 class CapturedStream {
  public:
   // The ctor redirects the stream to a temporary file.
-  explicit CapturedStream(int fd) : fd_(fd), uncaptured_fd_(dup(fd)) {
+  explicit CapturedStream(int fd) : fd_(fd), uncaptured_fd_(_dup(fd)) {
 # if GTEST_OS_WINDOWS
     char temp_dir_path[MAX_PATH + 1] = { '\0' };  // NOLINT
     char temp_file_path[MAX_PATH + 1] = { '\0' };  // NOLINT
@@ -526,7 +526,7 @@ class CapturedStream {
                                             temp_file_path);
     GTEST_CHECK_(success != 0)
         << "Unable to create a temporary file in " << temp_dir_path;
-    const int captured_fd = creat(temp_file_path, _S_IREAD | _S_IWRITE);
+    const int captured_fd = _creat(temp_file_path, _S_IREAD | _S_IWRITE);
     GTEST_CHECK_(captured_fd != -1) << "Unable to open temporary file "
                                     << temp_file_path;
     filename_ = temp_file_path;
@@ -558,8 +558,8 @@ class CapturedStream {
     filename_ = name_template;
 # endif  // GTEST_OS_WINDOWS
     fflush(NULL);
-    dup2(captured_fd, fd_);
-    close(captured_fd);
+    _dup2(captured_fd, fd_);
+    posix::Close(captured_fd);
   }
 
   ~CapturedStream() {
@@ -570,8 +570,8 @@ class CapturedStream {
     if (uncaptured_fd_ != -1) {
       // Restores the original stream.
       fflush(NULL);
-      dup2(uncaptured_fd_, fd_);
-      close(uncaptured_fd_);
+      _dup2(uncaptured_fd_, fd_);
+      posix::Close(uncaptured_fd_);
       uncaptured_fd_ = -1;
     }
 
