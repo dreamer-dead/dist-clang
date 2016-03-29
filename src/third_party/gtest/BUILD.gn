@@ -42,7 +42,7 @@ static_library("gtest") {
 
   include_dirs = [ "exported" ]
 
-  public_configs = [ ":includes" ]
+  public_configs = [ ":includes", "//build/config:no_exceptions", ]
 
   deps += [ "//src/base:logging" ]
 
