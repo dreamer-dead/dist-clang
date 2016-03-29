@@ -139,7 +139,9 @@ shared_library("protobuf") {
     "exported/src/google/protobuf/text_format.h",
   ]
 
-  libs = [ "z" ]
+  if (host_os != "win") {
+    libs = [ "z" ]
+  }
 
   if (!config_for_tests) {
     configs -= [ "//build/config:no_rtti" ]
@@ -226,7 +228,9 @@ executable("protoc") {
 
   public = []
 
-  libs = [ "z" ]
+  if (host_os != "win") {
+    libs = [ "z" ]
+  }
 
   if (!config_for_tests) {
     configs -= [ "//build/config:no_rtti" ]
