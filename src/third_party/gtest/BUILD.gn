@@ -46,5 +46,9 @@ static_library("gtest") {
 
   deps += [ "//src/base:logging" ]
 
-  # public_deps = [ "//src/third_party/libcxxabi:c++abi" ]
+  if (host_os == "win") {
+    defines = [ "GTEST_HAS_RTTI=0" ]
+  } else {
+    public_deps = [ "//src/third_party/libcxxabi:c++abi" ]
+  }
 }
