@@ -4,7 +4,7 @@ toolchain("clang") {
   ar = "lib"
   ld = cxx
 
-  lib_switch = "-l"
+  lib_switch = ""
   lib_dir_switch = "-L"
 
   tool("cc") {

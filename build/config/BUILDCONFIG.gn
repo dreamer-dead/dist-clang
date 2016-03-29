@@ -40,14 +40,17 @@ if (host_os != "mac" && host_os != "win" && !use_tsan) {
 default_configs = [
   "//build/config:asan",
   "//build/config:base",
-  "//build/config:no_stdlibs",
   "//build/config:tsan",
 ]
+
+if (host_os != "win") {
+  default_configs += [ "//build/config:no_stdlibs" ]
+}
 
 if (config_for_tests) {
   if (!use_tsan) {
     use_asan = true
-    if (host_os == "mac") {
+    if (host_os == "mac" || host_os == "win") {
       # FIXME: ASan binaries doesn't run on Mac
       use_asan = false
     }
