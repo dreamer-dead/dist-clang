@@ -5,9 +5,14 @@ config("includes") {
 config("flags") {
   defines = [
     "LEVELDB_ATOMIC_PRESENT",
-    "LEVELDB_PLATFORM_POSIX",
     "SNAPPY",
   ]
+
+  if (host_os == "win") {
+    defines += [ "LEVELDB_PLATFORM_WINDOWS" ]
+  } else {
+    defines += [ "LEVELDB_PLATFORM_POSIX" ]
+  }
 
   cflags = [
     "-fno-builtin-memcmp",
@@ -63,8 +68,6 @@ static_library("leveldb") {
     "exported/include/leveldb/write_batch.h",
     "exported/port/port.h",
     "exported/port/port_example.h",
-    "exported/port/port_posix.cc",
-    "exported/port/port_posix.h",
     "exported/table/block.cc",
     "exported/table/block.h",
     "exported/table/block_builder.cc",
@@ -91,7 +94,6 @@ static_library("leveldb") {
     "exported/util/crc32c.cc",
     "exported/util/crc32c.h",
     "exported/util/env.cc",
-    "exported/util/env_posix.cc",
     "exported/util/filter_policy.cc",
     "exported/util/hash.cc",
     "exported/util/hash.h",
@@ -104,6 +106,21 @@ static_library("leveldb") {
     "exported/util/random.h",
     "exported/util/status.cc",
   ]
+
+  if (host_os == "win") {
+    sources += [
+      "exported/port/port_win.cc",
+      "exported/port/port_win.h",
+      "exported/util/env_win.cc",
+    ]
+    libs = [ "shlwapi.lib" ]
+  } else {
+    sources += [
+      "exported/port/port_posix.cc",
+      "exported/port/port_posix.h",
+      "exported/util/env_posix.cc",
+    ]
+  }
 
   public = [
     "exported/include/leveldb/cache.h",
