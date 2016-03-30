@@ -2,7 +2,7 @@ toolchain("clang") {
   cc = "clang"
   cxx = "clang++"
   ar = "lib"
-  ld = cxx
+  ld = "link.exe"
 
   lib_switch = ""
   lib_dir_switch = "-L"
@@ -48,7 +48,7 @@ toolchain("clang") {
   }
 
   tool("alink") {
-    command = "rm -f {{output}} && $ar rcs {{output}} {{inputs}}"
+    command = "$ar /nologo /OUT:{{output}} {{inputs}}"
     description = "AR {{output}}"
     outputs = [
       "{{target_out_dir}}/{{target_output_name}}{{output_extension}}",
@@ -62,7 +62,7 @@ toolchain("clang") {
     libname = "${dllname}.lib"  # e.g. foo.dll.lib
     rspfile = "${dllname}.rsp"
 
-    link_command = "link.exe /nologo /IMPLIB:$libname /DLL /OUT:$dllname /PDB:${dllname}.pdb @$rspfile"
+    link_command = "$ld /nologo /IMPLIB:$libname /DLL /OUT:$dllname /PDB:${dllname}.pdb @$rspfile"
 
     command = link_command
 
@@ -87,10 +87,13 @@ toolchain("clang") {
 
   tool("link") {
     outfile = "{{root_out_dir}}/{{target_output_name}}{{output_extension}}"
-    command = "$ld {{ldflags}} -o $outfile -Wl,--start-group {{inputs}} {{solibs}} -Wl,--end-group {{libs}}"
+    rspfile = "${outfile}.rsp"
+    command = "$ld /nologo /OUT:$outfile /PDB:$outfile.pdb @$rspfile"
+    default_output_extension = ".exe"
     description = "LINK $outfile"
     outputs = [
       outfile,
     ]
+    rspfile_content = "{{libs}} {{solibs}} {{inputs_newline}} {{ldflags}}"
   }
 }
