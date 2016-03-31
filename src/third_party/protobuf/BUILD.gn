@@ -31,6 +31,12 @@ config("warnings") {
   }
 }
 
+if (host_os == "win") {
+  config("protobuf_use_dlls") {
+    defines = [ "PROTOBUF_USE_DLLS" ]
+  }
+}
+
 protobuf_lite_sources = [
   "exported/src/google/protobuf/extension_set.cc",
   "exported/src/google/protobuf/extension_set.h",
@@ -81,6 +87,9 @@ shared_library("protobuf_lite") {
   configs += [ ":warnings" ]
 
   public_configs = [ ":includes" ]
+
+  public_configs += [ ":protobuf_use_dlls" ]
+  defines = [ "LIBPROTOBUF_EXPORTS" ]
 }
 
 shared_library("protobuf") {
@@ -149,6 +158,9 @@ shared_library("protobuf") {
   configs += [ ":warnings" ]
 
   public_configs = [ ":includes" ]
+
+  public_configs += [ ":protobuf_use_dlls" ]
+  defines = [ "LIBPROTOBUF_EXPORTS" ]
 }
 
 executable("protoc") {
@@ -238,4 +250,6 @@ executable("protoc") {
   configs += [ ":warnings" ]
 
   deps += [ ":protobuf" ]
+
+  defines = [ "LIBPROTOC_EXPORTS" ]
 }

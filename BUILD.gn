@@ -375,6 +375,10 @@ if (host_os == "mac") {
 if (host_os == "win") {
   group("Build") {
     deps = package_deps
-    deps -= [ "//src/third_party/gperftools:tcmalloc" ]
+    deps -= [
+      "//src/third_party/libcxx:c++",
+      "//src/third_party/libcxxabi:c++abi",
+      "//src/third_party/gperftools:tcmalloc"
+      ]
   }
 }
