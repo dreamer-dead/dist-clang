@@ -163,7 +163,7 @@ shared_library("protobuf") {
   defines = [ "LIBPROTOBUF_EXPORTS" ]
 }
 
-executable("protoc") {
+executable("protoc_build") {
   visibility += [ "//src/base/*" ]
 
   sources = [
@@ -252,4 +252,13 @@ executable("protoc") {
   deps += [ ":protobuf" ]
 
   defines = [ "LIBPROTOC_EXPORTS" ]
+}
+
+copy("protoc") {
+  sources = [
+    "//bin/win/protoc.exe",
+  ]
+  outputs = [
+    "$root_out_dir/protoc.exe",
+  ]
 }

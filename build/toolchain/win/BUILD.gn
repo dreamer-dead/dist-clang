@@ -43,7 +43,8 @@ toolchain("clang") {
   }
 
   tool("copy") {
-    command = "ln -f {{source}} {{output}} 2>/dev/null || (rm -rf {{output}} && cp -af {{source}} {{output}})"
+    #command = "ln -f {{source}} {{output}} 2>/dev/null || (rm -rf {{output}} && cp -af {{source}} {{output}})"
+    command = "ln -f {{source}} {{output}}"
     description = "COPY {{source}} {{output}}"
   }
 
