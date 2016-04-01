@@ -18,7 +18,9 @@ class Thread {
 
   template <class F, class... Args>
   explicit Thread(Literal name, F&& f, Args&&... args) {
+#if defined(OS_LINUX) || defined(OS_MACOSX)
     auto old_set = BlockSignals();
+#endif
     thread_ = std::thread(f, args...);
 #if defined(OS_LINUX)
     pthread_setname_np(thread_.native_handle(), name);
@@ -26,7 +28,10 @@ class Thread {
 // TODO: implement the thread naming.
 //       See http://stackoverflow.com/q/31897364/377393
 #endif
+
+#if defined(OS_LINUX) || defined(OS_MACOSX)
     UnblockSignals(old_set);
+#endif
   }
 
   inline id get_id() const { return thread_.get_id(); }
@@ -36,6 +41,7 @@ class Thread {
   inline void swap(Thread& other) { thread_.swap(other.thread_); }
 
  private:
+#if defined(OS_LINUX) || defined(OS_MACOSX)
   inline sigset_t BlockSignals() {
     sigset_t signal_set, old_set;
 
@@ -54,6 +60,7 @@ class Thread {
   inline void UnblockSignals(sigset_t old_set) {
     pthread_sigmask(SIG_SETMASK, &old_set, nullptr);
   }
+#endif
 
   std::thread thread_;
 };

@@ -4,18 +4,23 @@
 #include <base/c_utils.h>
 
 #include <fcntl.h>
-#include <sys/ioctl.h>
+//#include <sys/ioctl.h>
 
 namespace dist_clang {
 namespace base {
 
 Data::Data(NativeType fd) : Handle(fd) {
+#if defined(OS_LINUX) || defined(OS_MACOSX)
   DCHECK(!IsValid() || !IsPassive());
+#else
+  DCHECK(!IsValid());
+#endif
 }
 
 bool Data::MakeBlocking(bool blocking, String* error) {
   DCHECK(IsValid());
 
+#if defined(OS_LINUX) || defined(OS_MACOSX)
   int flags = fcntl(native(), F_GETFL, 0);
   if (flags == -1) {
     GetLastError(error);
@@ -33,6 +38,13 @@ bool Data::MakeBlocking(bool blocking, String* error) {
     GetLastError(error);
     return false;
   }
+#else
+  unsigned long nonblocking = blocking ? 1 : 0;
+  if (ioctlsocket(fd, FIONBIO, &nonblocking) != 0) {
+    GetLastError(error);
+    return false;
+  }
+#endif
 
   return true;
 }

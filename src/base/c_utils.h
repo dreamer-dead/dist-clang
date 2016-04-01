@@ -18,6 +18,9 @@
 namespace dist_clang {
 namespace base {
 
+#define chdir _chdir
+#define getcwd _getcwd
+
 inline bool ChangeCurrentDir(Immutable path, String* error) {
   if (chdir(path.c_str()) == -1) {
     GetLastError(error);
@@ -51,6 +54,9 @@ inline void GetLastError(String* error) {
     error->assign(strerror(errno));
   }
 }
+
+#undef chdir
+#undef getcwd
 
 }  // namespace base
 }  // namespace dist_clang

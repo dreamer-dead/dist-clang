@@ -2,6 +2,14 @@
 
 #include <base/stl_include.h>
 
+#include <exception>
+#include <typeinfo>
+
+namespace std {
+
+using ::type_info;
+}
+
 #include STL(array)
 #include STL(atomic)
 #include STL(cstdint)
