@@ -97,9 +97,9 @@ config("no_exceptions") {
 }
 
 config("no_rtti") {
-  cflags_cc = [ "-fno-rtti" ]
-
   if (host_os != "win") {
+    cflags_cc = [ "-fno-rtti" ]
+
     ldflags = [ "-fno-rtti" ]
   }
 }
