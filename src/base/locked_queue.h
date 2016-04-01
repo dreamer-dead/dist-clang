@@ -2,9 +2,9 @@
 
 #include <base/assert.h>
 #include <base/attributes.h>
+#include <base/optional.h>
 
 #include STL(condition_variable)
-#include STL(experimental/optional)
 #include STL(queue)
 
 namespace dist_clang {
@@ -16,7 +16,7 @@ class QueueAggregator;
 template <class T>
 class LockedQueue {
  public:
-  using Optional = std::experimental::optional<T>;
+  using Optional = ::base::optional<T>;
 
   enum {
     UNLIMITED = 0,
